@@ -1,6 +1,6 @@
-# Pikmail Api
+# [Pikmail Api](https://pikmail.herokuapp.com)
 
-This is a pretty basic rest api written with [Kort](http://ktor.io/) that uses the [Pikmail]() library for mapping gmail addresses to google profile pictures.
+This is a pretty basic rest api written with [Kort](http://ktor.io/) that uses the [Pikmail](https://github.com/epool/pikmail) library for mapping gmail addresses to google profile pictures.
 
 ## Usage
 
@@ -13,14 +13,29 @@ This api is hosted on heroku as `https://pikmail.herokuapp.com/` and it just exp
 
 - ##### Method: `GET`
 
+- ##### URL parameters:
+  Parameter | Description
+  --------- | -----------
+  gmail | The Gmail address of the profile to retrieve
+
+
 - ##### Query parameters:
-  Optional: `size=[Integer]` defines the size of the profile picture, default google size if omitted.
+  Parameter | Required | Default | Description
+  --------- | ------- | ------- |-----------
+  size | NO |  | If set, it defines the size of the profile picture, default google's size if omitted.
 
 - ##### Success Response: 
   Status `302`, the request will be redirected to the google profile picture url with the specified size.
   
 - ##### Error Response: 
-  Status `404`, if the Gmail address is invalid or not found.
+  The Pikmail API uses the following error codes:
+  
+  Error Code | Meaning
+  ---------- | -------
+  302 | Found -- The request will be redirected to the google profile picture url with the specified size if set.
+  404 | Not Found -- The specified Gmail account could not be found.
+  500 | Internal Server Error -- We had a problem with our server. Try again later.
+  503 | Service Unavailable -- We're temporarily offline for maintenance. Please try again later.
 
 #### Examples
 
@@ -33,9 +48,9 @@ curl -X GET 'https://pikmail.herokuapp.com/eduardo.alejandro.pool.ake@gmail.com?
 ###### Html
 
 ```html
-<img src="https://pikmail.herokuapp.com/eduardo.alejandro.pool.ake@gmail.com?size=100" alt="Smiley face">
+<img src="https://pikmail.herokuapp.com/eduardo.alejandro.pool.ake@gmail.com?size=100" alt="Profile Picture">
 ```
-<img src="https://pikmail.herokuapp.com/eduardo.alejandro.pool.ake@gmail.com?size=100" alt="Smiley face">
+<img src="https://pikmail.herokuapp.com/eduardo.alejandro.pool.ake@gmail.com?size=100" alt="Profile Picture">
 
 ###### Android Picasso
 
