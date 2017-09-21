@@ -4,11 +4,11 @@ This is a pretty basic rest api written with [Kort](http://ktor.io/) that uses t
 
 ## Usage
 
-This api is hosted on heroku as `https://...herokuapp.com/` and it just exposes one endpoint.
+This api is hosted on heroku as `https://pikmail.herokuapp.com/` and it just exposes one endpoint.
 
 #### Gmail endpoint
 
-- ##### Url: `https://...herokuapp.com/{gmail}?size=500`
+- ##### Url: `https://pikmail.herokuapp.com/{gmail}?size=100`
   Change `{gmail}` with the desired Gmail address.
 
 - ##### Method: `GET`
@@ -27,17 +27,18 @@ This api is hosted on heroku as `https://...herokuapp.com/` and it just exposes 
 ###### Curl
 
 ```bash
-curl -X GET 'https://...herokuapp.com/eduardo.alejandro.pool.ake@gmail.com?size=500' --verbose
+curl -X GET 'https://pikmail.herokuapp.com/eduardo.alejandro.pool.ake@gmail.com?size=100' --verbose
 ```
 
 ###### Html
 
 ```html
-<img src="https://...herokuapp.com/eduardo.alejandro.pool.ake@gmail.com" alt="Smiley face">
+<img src="https://pikmail.herokuapp.com/eduardo.alejandro.pool.ake@gmail.com?size=100" alt="Smiley face">
 ```
+<img src="https://pikmail.herokuapp.com/eduardo.alejandro.pool.ake@gmail.com?size=100" alt="Smiley face">
 
 ###### Android Picasso
 
 ```java
-Picasso.with(context).load("https://...herokuapp.com/eduardo.alejandro.pool.ake@gmail.com").into(imageView);
+Picasso.with(context).load("https://pikmail.herokuapp.com/eduardo.alejandro.pool.ake@gmail.com?size=100").into(imageView);
 ```
