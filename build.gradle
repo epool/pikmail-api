@@ -1,8 +1,8 @@
 group 'com.nearsoft'
-version '1.0-SNAPSHOT'
+version '1.0.1'
 
 buildscript {
-    ext.kotlin_version = '1.1.4-3'
+    ext.kotlin_version = '1.1.60'
     ext.ktor_version = '0.4.0'
 
     repositories {
@@ -35,7 +35,8 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
     compile "org.jetbrains.ktor:ktor-netty:$ktor_version"
     compile "ch.qos.logback:logback-classic:1.2.3"
-    compile "com.github.epool:pikmail:1.0.0"
+    compile "com.github.epool:pikmail:1.0.1"
+    compile "org.jetbrains.kotlinx:kotlinx-coroutines-rx2:0.19.3"
 }
 
 compileKotlin {
@@ -48,7 +49,7 @@ compileTestKotlin {
 jar {
     manifest {
         attributes(
-                'Main-Class': 'com.nearsoft.pikmail.Main'
+                'Main-Class': 'com.nearsoft.pikmail.api.Main'
         )
     }
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
@@ -58,11 +59,11 @@ task stage(type: Copy, dependsOn: [clean, build]) {
     from jar.archivePath
     into project.rootDir
     rename {
-        'app.jar'
+        'pikmail-api.jar'
     }
 }
 stage.mustRunAfter(clean)
 
 clean << {
-    project.file('app.jar').delete()
+    project.file('pikmail-api.jar').delete()
 }

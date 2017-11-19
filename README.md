@@ -1,6 +1,6 @@
 # [Pikmail Api](https://pikmail.herokuapp.com)
 
-This is a pretty basic rest api written with [Kort](http://ktor.io/) that uses the [Pikmail](https://github.com/epool/pikmail) library for mapping gmail addresses to google profile pictures.
+This is a pretty basic rest api written with [Ktor](http://ktor.io/) that uses the [Pikmail](https://github.com/epool/pikmail) library for mapping gmail addresses to google profile pictures.
 
 ## Usage
 

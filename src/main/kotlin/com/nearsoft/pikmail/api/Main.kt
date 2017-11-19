@@ -1,5 +1,8 @@
-package com.nearsoft.pikmail
+package com.nearsoft.pikmail.api
 
+import com.nearsoft.pikmail.Pikmail
+import com.nearsoft.pikmail.ProfileNotFountException
+import kotlinx.coroutines.experimental.rx2.await
 import org.jetbrains.ktor.content.default
 import org.jetbrains.ktor.content.files
 import org.jetbrains.ktor.content.static
@@ -29,28 +32,24 @@ class Main {
                         default("index.html")
                     }
                     get("/{email}") {
-                        val email = call.parameters["email"]
+                        // Since the email is part of the endpoint path, it won't be null ever
+                        val email = call.parameters["email"]!!
                         val size = call.request.queryParameters["size"]
-                        if (email != null) {
-                            val profilePictureUrl = getProfilePictureUrl(email, size)
-                            if (profilePictureUrl != null) {
-                                call.respondRedirect(profilePictureUrl)
-                            } else {
-                                val notFoundStatusCode = HttpStatusCode.NotFound
-                                call.respondText("{\"status\": ${notFoundStatusCode.value}, \"error\": \"${notFoundStatusCode.description}\"}", ContentType.Application.Json, notFoundStatusCode)
+                        try {
+                            val profilePictureUrl = Pikmail.getProfilePictureUrl(email, size?.toInt()).await()
+                            call.respondRedirect(profilePictureUrl)
+                        } catch (profileNotFountException: ProfileNotFountException) {
+                            with(HttpStatusCode.NotFound) {
+                                call.respondText(
+                                        """{"email": "$email","status":$value,"error":"$description"}""",
+                                        ContentType.Application.Json,
+                                        this
+                                )
                             }
-                        } else {
-                            call.respondRedirect("/")
                         }
                     }
                 }
             }.start(wait = true)
-        }
-
-        private fun getProfilePictureUrl(email: String, size: String?) = try {
-            Pikmail.getProfilePictureUrl(email, size?.toInt()).blockingGet()
-        } catch (e: Exception) {
-            null
         }
 
     }
