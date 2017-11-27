@@ -42,7 +42,7 @@ class Main {
                         try {
                             val profilePictureUrl = Pikmail.getProfilePictureUrl(email, size?.toInt()).await()
                             call.respondRedirect(profilePictureUrl)
-                            analyticsManager.trackSuccess(email, size?.toInt(), ip)
+                            analyticsManager.trackSuccess(email, ip, size?.toInt())
                         } catch (throwable: Throwable) {
                             if (throwable is ProfileNotFountException) {
                                 with(HttpStatusCode.NotFound) {
@@ -53,7 +53,7 @@ class Main {
                                     )
                                 }
                             }
-                            analyticsManager.trackError(email, throwable)
+                            analyticsManager.trackError(email, ip, throwable)
                         }
                     }
                 }

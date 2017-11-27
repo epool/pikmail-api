@@ -11,14 +11,14 @@ class AnalyticsManager {
     private val messageBuilder: MessageBuilder = MessageBuilder(System.getenv("MIXPANEL_TOKEN"))
     private val mixpanel = MixpanelAPI()
 
-    fun trackSuccess(email: String, size: Int?, remoteIp: String?) = track(email, EventType.SUCCESS, "Size" to size, "RemoteIp" to remoteIp)
+    fun trackSuccess(email: String, remoteIp: String?, size: Int?) = track(email, EventType.SUCCESS, remoteIp, "Size" to size)
 
-    fun trackError(email: String, throwable: Throwable) = track(email, EventType.ERROR, "Message" to throwable.message)
+    fun trackError(email: String, remoteIp: String?, throwable: Throwable) = track(email, EventType.ERROR, remoteIp, "Message" to throwable.message)
 
-    private fun track(distinctId: String, eventType: EventType, vararg properties: Pair<String, Any?>) {
+    private fun track(distinctId: String, eventType: EventType, remoteIp: String?, vararg properties: Pair<String, Any?>) {
         val delivery = ClientDelivery().apply {
             addMessage(messageBuilder.set(distinctId, JSONObject(mapOf("\$email" to distinctId))))
-            addMessage(messageBuilder.event(distinctId, eventType.name, JSONObject(mapOf(*properties))))
+            addMessage(messageBuilder.event(distinctId, eventType.name, JSONObject(mapOf(*properties, "RemoteIp" to remoteIp))))
             addMessage(messageBuilder.increment(distinctId, mapOf("Counter" to 1L)))
         }
         mixpanel.deliver(delivery)
