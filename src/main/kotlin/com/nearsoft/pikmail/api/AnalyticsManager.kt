@@ -19,7 +19,7 @@ class AnalyticsManager {
         val delivery = ClientDelivery().apply {
             addMessage(messageBuilder.set(distinctId, JSONObject(mapOf("\$email" to distinctId))))
             addMessage(messageBuilder.event(distinctId, eventType.name, JSONObject(mapOf(*properties, "RemoteIp" to remoteIp))))
-            addMessage(messageBuilder.increment(distinctId, mapOf("Counter" to 1L)))
+            addMessage(messageBuilder.increment(distinctId, mapOf((if (eventType == EventType.SUCCESS) "Counter" else "ErrorCounter") to 1L)))
         }
         mixpanel.deliver(delivery)
     }
