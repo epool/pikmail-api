@@ -17,9 +17,12 @@ import org.jetbrains.ktor.routing.get
 import org.jetbrains.ktor.routing.routing
 import java.io.File
 
+
 class Main {
 
     companion object {
+
+        private val analyticsManager = AnalyticsManager()
 
         @JvmStatic
         fun main(args: Array<String>) {
@@ -35,17 +38,22 @@ class Main {
                         // Since the email is part of the endpoint path, it won't be null ever
                         val email = call.parameters["email"]!!
                         val size = call.request.queryParameters["size"]
+                        val ip = call.request.headers["X-Forwarded-For"] ?: "RemoteHost[${call.request.local.remoteHost}]"
                         try {
                             val profilePictureUrl = Pikmail.getProfilePictureUrl(email, size?.toInt()).await()
                             call.respondRedirect(profilePictureUrl)
-                        } catch (profileNotFountException: ProfileNotFountException) {
-                            with(HttpStatusCode.NotFound) {
-                                call.respondText(
-                                        """{"email": "$email","status":$value,"error":"$description"}""",
-                                        ContentType.Application.Json,
-                                        this
-                                )
+                            analyticsManager.trackSuccess(email, size?.toInt(), ip)
+                        } catch (throwable: Throwable) {
+                            if (throwable is ProfileNotFountException) {
+                                with(HttpStatusCode.NotFound) {
+                                    call.respondText(
+                                            """{"email": "$email","status":$value,"error":"$description"}""",
+                                            ContentType.Application.Json,
+                                            this
+                                    )
+                                }
                             }
+                            analyticsManager.trackError(email, throwable)
                         }
                     }
                 }
