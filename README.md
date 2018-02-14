@@ -2,6 +2,8 @@
 
 This is a pretty basic rest api written with [Ktor](http://ktor.io/) that uses the [Pikmail](https://github.com/epool/pikmail) library for mapping gmail addresses to google profile pictures.
 
+You can read [this blog post](https://nearsoft.com/blog/pikmail-emails-to-pictures-using-kotlin/) to know how Pikmail Api works intenally.
+
 ## Usage
 
 This api is hosted on heroku as `https://pikmail.herokuapp.com/` and it just exposes one endpoint.
