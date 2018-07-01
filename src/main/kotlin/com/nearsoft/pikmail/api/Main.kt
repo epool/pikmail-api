@@ -1,22 +1,24 @@
 package com.nearsoft.pikmail.api
 
+import com.nearsoft.ipapiklient.IpApiKlient
+import com.nearsoft.ipapiklient.models.IpCheckResult
 import com.nearsoft.pikmail.Pikmail
 import com.nearsoft.pikmail.ProfileNotFountException
+import io.ktor.application.call
+import io.ktor.content.default
+import io.ktor.content.files
+import io.ktor.content.static
+import io.ktor.content.staticRootFolder
+import io.ktor.http.ContentType
+import io.ktor.http.HttpStatusCode
+import io.ktor.response.respondRedirect
+import io.ktor.response.respondText
+import io.ktor.routing.get
+import io.ktor.routing.routing
+import io.ktor.server.engine.embeddedServer
+import io.ktor.server.netty.Netty
 import kotlinx.coroutines.experimental.rx2.await
-import org.jetbrains.ktor.content.default
-import org.jetbrains.ktor.content.files
-import org.jetbrains.ktor.content.static
-import org.jetbrains.ktor.content.staticRootFolder
-import org.jetbrains.ktor.host.embeddedServer
-import org.jetbrains.ktor.http.ContentType
-import org.jetbrains.ktor.http.HttpStatusCode
-import org.jetbrains.ktor.netty.Netty
-import org.jetbrains.ktor.response.respondRedirect
-import org.jetbrains.ktor.response.respondText
-import org.jetbrains.ktor.routing.get
-import org.jetbrains.ktor.routing.routing
 import java.io.File
-
 
 class Main {
 
@@ -38,11 +40,15 @@ class Main {
                         // Since the email is part of the endpoint path, it won't be null ever
                         val email = call.parameters["email"]!!
                         val size = call.request.queryParameters["size"]
-                        val ip = call.request.headers["X-Forwarded-For"] ?: "RemoteHost[${call.request.local.remoteHost}]"
+                        val ip = call.request.headers["X-Forwarded-For"]
+                                ?: "RemoteHost[${call.request.local.remoteHost}]"
+
+                        val ipCheckResult: IpCheckResult = IpApiKlient.getIpInfo(ip).await()
+
                         try {
                             val profilePictureUrl = Pikmail.getProfilePictureUrl(email, size?.toInt()).await()
                             call.respondRedirect(profilePictureUrl)
-                            analyticsManager.trackSuccess(email, ip, size?.toInt())
+                            analyticsManager.trackSuccess(email, ipCheckResult, size?.toInt())
                         } catch (throwable: Throwable) {
                             if (throwable is ProfileNotFountException) {
                                 with(HttpStatusCode.NotFound) {
@@ -53,7 +59,7 @@ class Main {
                                     )
                                 }
                             }
-                            analyticsManager.trackError(email, ip, throwable)
+                            analyticsManager.trackError(email, ipCheckResult, throwable)
                         }
                     }
                 }
