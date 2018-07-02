@@ -6,6 +6,19 @@ import com.mixpanel.mixpanelapi.MixpanelAPI
 import com.nearsoft.ipapiklient.models.IpCheckResult
 import org.json.JSONObject
 
+fun IpCheckResult.toMixpanelObject() = JSONObject(if (isSuccess()) ipInfo else ipError).apply {
+    val replacements = mapOf(
+            "city" to "\$city",
+            "country" to "mp_country_code",
+            "regionName" to "\$region"
+    )
+    replacements.forEach { (originalKey, newKey) ->
+        if (has(originalKey)) {
+            put(newKey, get(originalKey))
+            remove(originalKey)
+        }
+    }
+}
 
 class AnalyticsManager {
 
@@ -18,8 +31,10 @@ class AnalyticsManager {
 
     private fun track(distinctId: String, eventType: EventType, ipCheckResult: IpCheckResult, vararg properties: Pair<String, Any?>) {
         val delivery = ClientDelivery().apply {
-            val eventData = JSONObject(if (ipCheckResult.isSuccess()) ipCheckResult.ipInfo else ipCheckResult.ipError).apply {
-                properties.forEach { (key, value) -> put(key, value) }
+            val eventData = ipCheckResult.toMixpanelObject().apply {
+                properties.forEach { (key, value) ->
+                    put(key, value)
+                }
             }
             addMessage(messageBuilder.set(distinctId, JSONObject(mapOf("\$email" to distinctId))))
             addMessage(messageBuilder.event(distinctId, eventType.name, eventData))
