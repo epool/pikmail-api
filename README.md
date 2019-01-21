@@ -1,5 +1,19 @@
 # [Pikmail Api](https://pikmail.herokuapp.com)
 
+# DEPRECATED
+
+**UPDATE:**
+Since this API was fully based on the [Picasa API](https://developers.google.com/picasa-web/) and that API has been depreated, Therefore this API is being deprecated too unless we found a workaround to this.
+
+```
+This API is being deprecated and will be turned down in January 2019. Migrate to Google Photos Library API as soon as possible to avoid disruptions to your application.
+```
+
+Info [Here](https://developers.google.com/picasa-web/)
+
+================================================================================
+
+
 This is a pretty basic rest api written with [Ktor](http://ktor.io/) that uses the [Pikmail](https://github.com/epool/pikmail) library for mapping gmail addresses to google profile pictures.
 
 You can read [this blog post](https://nearsoft.com/blog/pikmail-emails-to-pictures-using-kotlin/) to know how Pikmail Api works intenally.
